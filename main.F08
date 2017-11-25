@@ -17,7 +17,7 @@ contains
     end do
   end function
 
-  function factorial(n)
+  pure function factorial(n)
     double precision :: factorial
     double precision, intent(in) :: n 
     integer :: x, i
@@ -25,8 +25,7 @@ contains
     x = int(n)
 
     if (x < 0) then
-      write(*,*) "Error: Tried to take the factorial of a negative number"
-      call abort
+      factorial = 0
     else if (x == 0) then
       factorial = 1
     else if (x == 1) then
@@ -39,7 +38,7 @@ contains
     endif
   end function
 
-  pure function doOp(params, i) result(newParams)
+  pure function doBinaryOp(params, i) result(newParams)
     character(len=32), allocatable, dimension(:), intent(in) :: params
     character(len=32), allocatable, dimension(:) :: newParams
     integer, intent(in) :: i
@@ -73,20 +72,49 @@ contains
     newParams(i-1:(size(newParams))) = params((i+1):(size(params)))
   end function
 
-  pure recursive function evaluate(params, ops) result(res)
+  pure function doUnaryOp(params, i) result(newParams)
+    character(len=32), allocatable, dimension(:), intent(in) :: params
+    character(len=32), allocatable, dimension(:) :: newParams
+    integer, intent(in) :: i
+    double precision :: res, n
+    
+    allocate(newParams(size(params) - 1))
+
+    read(params(i-1),*) n
+
+    select case (params(i))
+      case ("factorial")
+        res = factorial(n)
+    end select
+
+    if (i > 2) then
+      newParams(1:(i-2)) = params(1:(i - 2))
+    endif
+
+    write(newParams(i-1), *) res
+    newParams(i-1:(size(newParams))) = params((i+1):(size(params)))
+  end function
+ 
+  pure recursive function evaluate(params, binaryOps, unaryOps) result(res)
     character(len=32), allocatable, dimension(:), intent(in) :: params
     character(len=32) :: res
-    character(len=32), dimension(6), intent(in) :: ops
+    character(len=32), dimension(6), intent(in) :: binaryOps
+    character(len=32), dimension(1), intent(in) :: unaryOps
     integer :: i
 
     if (size(params) == 1) then
       res = params(1)
     else
       do i=1,size(params)
-        if (any(ops == params(i))) then
-          res = evaluate(doOp(params, i), ops)
+
+        if (any(binaryOps == params(i))) then
+          res = evaluate(doBinaryOp(params, i), binaryOps, unaryOps)
+          exit
+        else if (any(unaryOps == params(i))) then
+          res = evaluate(doUnaryOp(params, i), binaryOps, unaryOps)
           exit
         endif
+
       end do
     endif
 
@@ -98,17 +126,18 @@ program kaboop
 use kaboop_funcs
 implicit none
 
-  character(len=32), dimension(6) :: ops
-  double precision :: n = 4
-  ops(1) = "+"
-  ops(2) = "-"
-  ops(3) = "/"
-  ops(4) = "*"
-  ops(5) = "^"
-  ops(6) = "**"
+  character(len=32), dimension(6) :: binaryOps
+  character(len=32), dimension(1) :: unaryOps
 
-  !print *, evaluate(getArgs(), ops)
+  binaryOps(1) = "+"
+  binaryOps(2) = "-"
+  binaryOps(3) = "/"
+  binaryOps(4) = "*"
+  binaryOps(5) = "^"
+  binaryOps(6) = "**"
 
-  print *, factorial(n)
+  unaryOps(1) = "factorial"
+
+  print *, evaluate(getArgs(), binaryOps, unaryOps)
  
 end program
