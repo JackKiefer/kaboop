@@ -17,6 +17,22 @@ contains
     end do
   end function
 
+  pure recursive function binomial(n, k) result(res)
+    double precision, intent(in) :: n, k
+    double precision :: res
+
+    if (k > n) then
+      res = 0
+    else if (k < 0) then
+      res = 0
+    else if (k > (n/2)) then
+      res = binomial(n, (n-k))
+    else
+      res = factorial(n)/(factorial(k)*(factorial(n-k)))
+    endif
+  end function
+
+
   pure function factorial(n)
     double precision :: factorial
     double precision, intent(in) :: n 
@@ -58,10 +74,14 @@ contains
         res = a / b
       case ("*")
         res = a * b
+      case ("*")
+        res = a * b
       case ("^")
         res = a ** b
       case ("**")
         res = a ** b
+      case ("choose")
+        res = binomial(a,b)
     end select
 
     if (i > 3) then
@@ -85,6 +105,26 @@ contains
     select case (params(i))
       case ("factorial")
         res = factorial(n)
+      case ("abs")
+        res = abs(n)
+      case ("sqrt")
+        res = sqrt(n)
+      case ("sin")
+        res = sin(n)
+      case ("cos")
+        res = cos(n)
+      case ("tan")
+        res = tan(n)
+      case ("arcsin")
+        res = asin(n)
+      case ("arccos")
+        res = acos(n)
+      case ("arctan")
+        res = atan(n)
+      case ("exp")
+        res = exp(n)
+      case ("log")
+        res = log(n)
     end select
 
     if (i > 2) then
@@ -98,8 +138,8 @@ contains
   pure recursive function evaluate(params, binaryOps, unaryOps) result(res)
     character(len=32), allocatable, dimension(:), intent(in) :: params
     character(len=32) :: res
-    character(len=32), dimension(6), intent(in) :: binaryOps
-    character(len=32), dimension(1), intent(in) :: unaryOps
+    character(len=32), dimension(8), intent(in) :: binaryOps
+    character(len=32), dimension(11), intent(in) :: unaryOps
     integer :: i
 
     if (size(params) == 1) then
@@ -126,8 +166,8 @@ program kaboop
 use kaboop_funcs
 implicit none
 
-  character(len=32), dimension(6) :: binaryOps
-  character(len=32), dimension(1) :: unaryOps
+  character(len=32), dimension(8) :: binaryOps
+  character(len=32), dimension(11) :: unaryOps
 
   binaryOps(1) = "+"
   binaryOps(2) = "-"
@@ -135,8 +175,20 @@ implicit none
   binaryOps(4) = "*"
   binaryOps(5) = "^"
   binaryOps(6) = "**"
+  binaryOps(7) = "choose"
+  binaryOps(8) = "mult"
 
   unaryOps(1) = "factorial"
+  unaryOps(2) = "abs"
+  unaryOps(3) = "sqrt"
+  unaryOps(4) = "sin"
+  unaryOps(5) = "cos"
+  unaryOps(6) = "tan"
+  unaryOps(7) = "arcsin"
+  unaryOps(8) = "arccos"
+  unaryOps(9) = "arctan"
+  unaryOps(10) = "exp"
+  unaryOps(11) = "log"
 
   print *, evaluate(getArgs(), binaryOps, unaryOps)
  
