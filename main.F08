@@ -90,6 +90,7 @@ contains
 
     write(newParams(i-2), *) res
     newParams(i-1:(size(newParams))) = params((i+1):(size(params)))
+
   end function
 
   pure function doUnaryOp(params, i) result(newParams)
@@ -97,7 +98,7 @@ contains
     character(len=32), allocatable, dimension(:) :: newParams
     integer, intent(in) :: i
     double precision :: res, n
-    
+
     allocate(newParams(size(params) - 1))
 
     read(params(i-1),*) n
@@ -132,15 +133,16 @@ contains
     endif
 
     write(newParams(i-1), *) res
-    newParams(i-1:(size(newParams))) = params((i+1):(size(params)))
+    newParams(i:(size(newParams))) = params((i+1):(size(params)))
   end function
  
-  pure recursive function evaluate(params, binaryOps, unaryOps) result(res)
+  recursive function evaluate(params, binaryOps, unaryOps) result(res)
     character(len=32), allocatable, dimension(:), intent(in) :: params
     character(len=32) :: res
     character(len=32), dimension(8), intent(in) :: binaryOps
     character(len=32), dimension(11), intent(in) :: unaryOps
     integer :: i
+
 
     if (size(params) == 1) then
       res = params(1)
