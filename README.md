@@ -63,5 +63,5 @@ kaboop <expression>
 | `arcsin`    | inverse sine         |                                        | 
 | `arccos`    | inverse cosine       |                                        | 
 | `arctan`    | inverse tangent      |                                        | 
-| `exp`       | base e exponential   |                                        | 
+| `exp`       | base _e_ exponential   |                                        | 
 | `log`       | natural logarithm    |                                        | 
