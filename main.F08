@@ -17,6 +17,28 @@ contains
     end do
   end function
 
+  function factorial(n)
+    double precision :: factorial
+    double precision, intent(in) :: n 
+    integer :: x, i
+
+    x = int(n)
+
+    if (x < 0) then
+      write(*,*) "Error: Tried to take the factorial of a negative number"
+      call abort
+    else if (x == 0) then
+      factorial = 1
+    else if (x == 1) then
+      factorial = 1
+    else
+      do i = (x-1), 1, -1
+        x = x * i
+      end do
+      factorial = x
+    endif
+  end function
+
   pure function doOp(params, i) result(newParams)
     character(len=32), allocatable, dimension(:), intent(in) :: params
     character(len=32), allocatable, dimension(:) :: newParams
@@ -77,6 +99,7 @@ use kaboop_funcs
 implicit none
 
   character(len=32), dimension(6) :: ops
+  double precision :: n = 4
   ops(1) = "+"
   ops(2) = "-"
   ops(3) = "/"
@@ -84,6 +107,8 @@ implicit none
   ops(5) = "^"
   ops(6) = "**"
 
-  print *, evaluate(getArgs(), ops)
+  !print *, evaluate(getArgs(), ops)
+
+  print *, factorial(n)
  
 end program
