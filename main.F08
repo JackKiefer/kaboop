@@ -74,7 +74,7 @@ contains
         res = a / b
       case ("*")
         res = a * b
-      case ("*")
+      case ("mult")
         res = a * b
       case ("^")
         res = a ** b
